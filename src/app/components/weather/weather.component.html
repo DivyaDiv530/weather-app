@@ -1,0 +1,65 @@
+<h1 class="weather-app__header">Weather in your city for the next five days</h1>
+
+<div class="weather-app__select-container">
+  <label for="city">Select City:</label>
+  <select (change)="changeCity($event)">
+    <option value="" selected="selected" hidden="hidden">Please choose your city</option>
+    <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+  </select>
+</div>
+
+
+<div *ngIf="selectedCity()" class="weather-app__forecast">
+  <h2 class="weather-app__title">Weather Forecast for {{ selectedCity() }}</h2>
+  <table class="weather-app__table"  *ngIf="groupedForecasts()?.length">
+    <thead>
+      <tr>
+        <th class="weather-app__table-header">Date / Time</th>
+        <th
+          class="weather-app__table-header"
+          *ngFor="let time of uniqueTimes()"
+        >
+          {{ time }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let group of groupedForecasts()">
+        <td class="weather-app__table-cell">{{ group.date | date }}</td>
+        <td class="weather-app__table-cell" *ngFor="let time of uniqueTimes()">
+          <ng-container *ngIf="group.forecasts[time]; else empty">
+            <div class="weather-info">
+              <img
+                class="weather-info__icon"
+                [src]="
+                  'https://openweathermap.org/img/wn/' +
+                  group.forecasts[time]?.icon +
+                  '@2x.png'
+                "
+                alt="Weather Icon"
+              />
+              <div class="weather-info__details">
+                <p class="weather-info__details-item">
+                  Temperature: {{ group.forecasts[time]?.temperature }} °C
+                </p>
+                <p class="weather-info__details-item">
+                  Wind Speed: {{ group.forecasts[time]?.windSpeed }} m/s
+                </p>
+                <p class="weather-info__details-item">
+                  Description: {{ group.forecasts[time]?.description }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #empty>
+            <span class="weather-app__empty">-</span>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!selectedCity()" class="weather-app__no-selection">
+  <p>No city selected. Please choose a city to view the forecast.</p>
+</div>
